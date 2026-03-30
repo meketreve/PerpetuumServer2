@@ -59,6 +59,7 @@ using Perpetuum.Zones.Terrains;
 using Perpetuum.Zones.Terrains.Terraforming;
 using SharpOpenNat;
 using System.Numerics;
+using System.Reflection;
 using System.Runtime;
 using System.Runtime.Caching;
 using System.Runtime.Versioning;
@@ -138,7 +139,15 @@ namespace Perpetuum.Bootstrapper
             GlobalConfiguration config = _container.Resolve<GlobalConfiguration>();
             _container.Resolve<IHostStateService>().State = HostState.Init;
 
-
+            // Get last commit hash
+            var version = Assembly.GetEntryAssembly()
+                ?.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                ?.InformationalVersion;
+#if DEBUG
+            Logger.Warning($"DEBUG Version: {version}");
+#else
+            Logger.Info($"RELEASE Version: {version}");
+#endif
             Logger.Info($"Game root: {config.GameRoot}");
             Logger.Info($"GC isServerGC: {GCSettings.IsServerGC}");
             Logger.Info($"GC Latency mode: {GCSettings.LatencyMode}");
